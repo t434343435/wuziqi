@@ -26,7 +26,6 @@ public class MainView extends View {
     private int originY;
     private int cellWidth;
     public QiPan qiPan;
-    public boolean isEnd;
     public MainView(Context context) {
         super(context);
         init();
@@ -44,11 +43,10 @@ public class MainView extends View {
 
     private void init() {
         qiPan = new QiPan();
-        isEnd = false ;
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-               if(isEnd == false) {
+               if(!qiPan.getIsEnd()) {
                    switch (motionEvent.getAction()) {
                        case MotionEvent.ACTION_DOWN:
                            int x = Math.round((motionEvent.getX() - originX) / cellWidth);
@@ -58,12 +56,9 @@ public class MainView extends View {
                                    && Math.abs(originY + y * cellWidth - motionEvent.getY()) < cellWidth / 2) {
                                x += 7;
                                y += 7;
-                               if (qiPan.qiZi[x][y] == QiPan.QiZi_EMPTY)
-                                   qiPan.setQizi(x, y);
+                               qiPan.setQizi(x, y);
                                view.invalidate();
                            }
-                           if (qiPan.isEnd())
-                               isEnd = true;
                            break;
                    }
                }return false;
@@ -91,7 +86,7 @@ public class MainView extends View {
         paint.setColor(Color.RED);
         paint.setTextSize(contentWidth/5);
         paint.setTextAlign(Paint.Align.CENTER);
-        if(isEnd)canvas.drawText("Game Over",originX,originY,paint);
+        if(qiPan.getIsEnd())canvas.drawText("Game Over",originX,originY,paint);
     }
 
     private void drawChessBoard(Canvas canvas) {
@@ -116,20 +111,28 @@ public class MainView extends View {
     private void drawChess(Canvas canvas) {
         Bitmap black = BitmapFactory.decodeResource(this.getResources(), R.drawable.black);
         Bitmap white = BitmapFactory.decodeResource(this.getResources(), R.drawable.white);
-        for(int i=-7;i<=7;i++) {
-            for(int j=-7;j<=7;j++) {
-                if ( qiPan.qiZi[i+7][j+7] == QiPan.QiZi_EMPTY)continue;
-                Rect rect = new Rect(originX + i * cellWidth - cellWidth / 2,originY + j * cellWidth - cellWidth / 2,
-                        originX + i * cellWidth + cellWidth / 2,originY + j * cellWidth + cellWidth / 2);
-                if(qiPan.qiZi[i+7][j+7] == QiPan.QiZi_BLACK)
-                    canvas.drawBitmap(black,null,rect,null);
-                else
-                    canvas.drawBitmap(white,null,rect,null);
-            }
+
+        for (QiZi qizi: qiPan.getBlack()){
+            int x = qizi.getX() - 7;
+            int y = qizi.getY() - 7;
+            Rect rect = new Rect(originX + x * cellWidth - cellWidth / 2,originY + y * cellWidth - cellWidth / 2,
+                    originX + x * cellWidth + cellWidth / 2,originY + y * cellWidth + cellWidth / 2);
+            canvas.drawBitmap(black,null,rect,null);
+        }
+
+        for (QiZi qizi: qiPan.getWhite()){
+            int x = qizi.getX() - 7;
+            int y = qizi.getY() - 7;
+            Rect rect = new Rect(originX + x * cellWidth - cellWidth / 2,originY + y * cellWidth - cellWidth / 2,
+                    originX + x * cellWidth + cellWidth / 2,originY + y * cellWidth + cellWidth / 2);
+            canvas.drawBitmap(white,null,rect,null);
         }
     }
     public void reset(){
         qiPan.reset();
-        isEnd = false;
+    }
+
+    public void undo(){
+        qiPan.undo();
     }
 }
