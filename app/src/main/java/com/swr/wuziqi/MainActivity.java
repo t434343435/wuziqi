@@ -18,6 +18,14 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.game_view).invalidate();
             }
         });
+        Button undo = findViewById(R.id.button_undo);
+        undo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainView)findViewById(R.id.game_view)).undo();
+                findViewById(R.id.game_view).invalidate();
+            }
+        });
         Button end = findViewById(R.id.button_exit);
         end.setOnClickListener(new View.OnClickListener() {
             @Override
