@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="@string/options"
+        android:id = "@+id/menu_options"/>
+    <item
+        android:title="@string/bluetooth_game">
+         <menu>
+                <item
+                android:id="@+id/menu_server"
+                android:title="@string/server" />
+                <item
+                android:id="@+id/menu_client"
+                android:title="@string/client" />
+               <item
+                 android:id="@+id/menu_cancel"
+                 android:title="@string/cancel" />
+        </menu>
+    </item>
+    <item
+        android:title="@string/help"
+        android:id = "@+id/menu_help"/>
+</menu>

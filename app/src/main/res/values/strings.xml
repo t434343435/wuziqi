@@ -4,7 +4,12 @@
     <string name="start_game"> 开始游戏</string>
     <string name="undo_game"> 悔棋</string>
     <string name="exit_game"> 退出游戏</string>
-
+    <string name="options">选项</string>
+    <string name="bluetooth_game">蓝牙游戏</string>
+    <string name="server">服务端</string>
+    <string name="client">客户端</string>
+    <string name="help">帮助</string>
+    <string name="cancel">取消</string>
     <!--  DeviceListActivity -->
     <string name="scanning">扫描设备中...</string>
     <string name="select_device">选择一个设备来连接</string>

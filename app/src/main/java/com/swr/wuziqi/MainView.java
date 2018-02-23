@@ -9,14 +9,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.hardware.input.InputManager;
-import android.support.annotation.Nullable;
-import android.text.TextPaint;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
+
 
 public class MainView extends View {
 
@@ -26,6 +26,8 @@ public class MainView extends View {
     private int originY;
     private int cellWidth;
     public QiPan qiPan;
+    public TextView log ;
+    public Handler mHandler;
     public MainView(Context context) {
         super(context);
         init();
@@ -56,7 +58,24 @@ public class MainView extends View {
                                    && Math.abs(originY + y * cellWidth - motionEvent.getY()) < cellWidth / 2) {
                                x += 7;
                                y += 7;
-                               qiPan.setQizi(x, y);
+                               if(qiPan.setQizi(x, y)) {
+                                   switch (qiPan.getAction()) {
+                                       case QiPan.QiZi_BLACK:
+                                           addLog("白子   下落   (" + x + "," + y + ")");
+                                           break;
+                                       default:
+                                           addLog("黑子   下落   (" + x + "," + y + ")");
+                                   }
+                                   if(qiPan.getIsEnd()){
+                                       switch (qiPan.getAction()) {
+                                           case QiPan.QiZi_BLACK:
+                                               addLog("白子   胜利");
+                                               break;
+                                           default:
+                                               addLog("黑子   胜利");
+                                       }
+                                   }
+                               }
                                view.invalidate();
                            }
                            break;
@@ -74,8 +93,8 @@ public class MainView extends View {
         contentWidth = width;
         contentHeight = height;
         originX = width/2;
-        originY = height/2;
         cellWidth = width > height ? height / 16 : width / 16;
+        originY = height - 9 * cellWidth;
     }
     @Override
     protected void onDraw(Canvas canvas) {
@@ -108,6 +127,13 @@ public class MainView extends View {
                 originX + (float)(7.5 * cellWidth),originY + (float)(7.5 * cellWidth) + 4,paint);
 
     }
+    private void addLog(String str){
+        Message msg = new Message();
+        Bundle b = new Bundle();
+        b.putString("msg", str + '\n');
+        msg.setData(b);
+        mHandler.sendMessage(msg);
+    }
     private void drawChess(Canvas canvas) {
         Bitmap black = BitmapFactory.decodeResource(this.getResources(), R.drawable.black);
         Bitmap white = BitmapFactory.decodeResource(this.getResources(), R.drawable.white);
@@ -128,11 +154,21 @@ public class MainView extends View {
             canvas.drawBitmap(white,null,rect,null);
         }
     }
+
     public void reset(){
         qiPan.reset();
+        addLog("开始游戏!");
     }
 
     public void undo(){
-        qiPan.undo();
+        if(qiPan.undo()){
+            switch (qiPan.getAction()) {
+                case QiPan.QiZi_BLACK:
+                    addLog("黑子   悔棋");
+                    break;
+                default:
+                    addLog("白子   悔棋");
+            }
+        }
     }
 }

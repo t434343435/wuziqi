@@ -1,36 +1,47 @@
 package com.swr.wuziqi;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by t4343 on 2018/2/2.
+ * Created by t4343 on 2018/2/2.,,,,,,,,,
 */
 
 public class QiPan {
-    public static int QiZi_BLACK = 0;
-    public static int QiZi_WHITE = 1;
-    private boolean isEnd;
-    private ArrayList<QiZi> black;
-    private ArrayList<QiZi> white;
+    public final static int QiZi_BLACK = 0;
+    public final static int QiZi_WHITE = 1;
+    boolean isEnd;
+    private int action;
+    protected ArrayList<QiZi> black;
+    protected ArrayList<QiZi> white;
 
     public QiPan(){
         black = new ArrayList<>();
         white = new ArrayList<>();
+        action = QiZi_BLACK;
         isEnd = false;
     }
 
-    public void setQizi(int x,int y){
+    public boolean setQizi(int x,int y){
         QiZi newQizi = new QiZi(x,y);
-        if(black.contains(newQizi) || white.contains(newQizi))return;
+        if(black.contains(newQizi) || white.contains(newQizi))return false;
         else {
-            if (black.size() == white.size())
+            if (black.size() == white.size()) {
                 black.add(newQizi);
-            else
+                action = QiZi_WHITE;
+            }
+            else {
                 white.add(newQizi);
+                action = QiZi_BLACK;
+            }
             if (end()) isEnd = true;
         }
+        return true;
     }
 
     public boolean end(){
@@ -71,15 +82,18 @@ public class QiPan {
         }
     }
 
-    public void undo(){
-        if(isEnd)return;
-        if(black.isEmpty() || white.isEmpty()) return;
+    public boolean undo(){
+        if(isEnd)return false;
+        if(black.isEmpty() && white.isEmpty()) return false;
         if( black.size() == white.size()) {
             white.remove(white.get(white.size() - 1));
+            action = QiZi_WHITE;
         }
         else{
-            black.remove(black.get(white.size() - 1));
+            black.remove(black.get(black.size() - 1));
+            action = QiZi_BLACK;
         }
+        return true;
     }
 
     public boolean getIsEnd(){
@@ -99,4 +113,9 @@ public class QiPan {
     public ArrayList<QiZi> getWhite() {
         return white;
     }
+
+    public int getAction() {
+        return action;
+    }
+
 }
